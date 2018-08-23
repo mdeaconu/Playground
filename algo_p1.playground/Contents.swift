@@ -36,11 +36,17 @@ fileprivate func getGreater(then n: UInt64) -> UInt64 {
     return result
 }
 
-func compute(for n: UInt64) {
+func compute(for n: UInt64) -> (nextSmaller: UInt64, nextGreater: UInt64) {
+    if n & (n - 1) == 0 {
+        return (n >> 1, n << 1)
+    }
     let smaller = getSmaller(then: n)
     let greater = getGreater(then: n)
 
-    print("Output: \(smaller) and \(greater)")
+    return (smaller, greater)
 }
 
-compute(for: 11)
+// n is power of two
+let v = compute(for: 16)
+print("Output: \(v.nextSmaller) and \(v.nextGreater)")
+
