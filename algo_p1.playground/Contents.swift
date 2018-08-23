@@ -2,51 +2,38 @@
 
 import Foundation
 
-fileprivate func getSmaller(then n: UInt64) -> UInt64 {
-    var copy_n = n
-    var position: UInt8 = 0
-    
-    while copy_n > 0 {
-        copy_n >>= 1
-        position += 1
-    }
-    
-    var result: UInt64 = n
-    result &= ~(1 << position)
-    result |= (1 << (position - 1))
-
-    return result
-}
-
-fileprivate func getGreater(then n: UInt64) -> UInt64 {
-    var copy_n = n
-    var position: UInt8 = 0
-    
-    while copy_n > 0 {
-        if copy_n & 1 == 0 && position > 0 {
-            break
+//: use struct
+fileprivate struct TwinBits {
+    var number: UInt64 = 0
+    var nextGreater: UInt64 {
+        if number == 0 {
+            return 0
         }
-        copy_n >>= 1
-        position += 1
+        if number & (number - 1) == 0 {
+            return number << 1
+        }
+        
+        return core(n: number)
     }
     
-    var result: UInt64 = n | (1 << position)
-    result &= ~(1 << (position - 1))
-    
-    return result
-}
-
-func compute(for n: UInt64) -> (nextSmaller: UInt64, nextGreater: UInt64) {
-    if n & (n - 1) == 0 {
-        return (n >> 1, n << 1)
+    private func core(n: UInt64) -> UInt64 {
+        var copy_n = number
+        var position: UInt8 = 0
+        
+        while copy_n > 0 {
+            if copy_n & 1 == 0 && position > 0 {
+                break
+            }
+            copy_n >>= 1
+            position += 1
+        }
+        
+        var result: UInt64 = number | (1 << position)
+        result &= ~(1 << (position - 1))
+        
+        return result
     }
-    let smaller = getSmaller(then: n)
-    let greater = getGreater(then: n)
-
-    return (smaller, greater)
 }
 
-// n is power of two
-let v = compute(for: 16)
-print("Output: \(v.nextSmaller) and \(v.nextGreater)")
-
+fileprivate let n = TwinBits(number: 14)
+print("nextGreater: \(n.nextGreater)")
